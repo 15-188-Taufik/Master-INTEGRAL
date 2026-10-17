@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Seeder Akun Superadmin Default
-        User::firstOrCreate(
-            ['username' => 'superadmin'],
+        User::updateOrCreate(
+            ['username' => 'testuser'],
             [
                 'name' => 'Super Administrator',
                 'role' => 'superadmin',
