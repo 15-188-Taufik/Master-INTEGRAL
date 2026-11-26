@@ -9,30 +9,26 @@ class Participant extends Model
     protected $table = 'participants';
 
     protected $fillable = [
-        'training_id', 
-        'user_id', 
-        'nip_nik', 
-        'name', 
-        'gender', 
+        'training_id',
+        'user_id',
+        'nip_nik',
+        'name',
+        'gender',
         'phone',
-        'jabatan', 
-        'instansi', 
-        'provinsi', 
-        'kabupaten_kota', 
+        'jabatan',
+        'instansi',
+        'provinsi',
+        'kabupaten_kota',
+        'kecamatan',
+        'kelurahan',
         'status_kepegawaian',
     ];
 
-    /**
-     * Relasi ke Pelatihan
-     */
     public function training()
     {
         return $this->belongsTo(Training::class);
     }
 
-    /**
-     * Relasi Smart Linking ke Akun Pengguna (User)
-     */
     public function user()
     {
         return $this->belongsTo(User::class);

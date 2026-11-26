@@ -79,7 +79,7 @@ class ParticipantController extends Controller
     }
 
     /**
-     * Halaman Lengkapi Profil (Single Input Data: Pohon Wilayah Provinsi -> Kab/Kota)
+     * Halaman Lengkapi Profil (Single Input Data: Pohon Wilayah 4 Tingkat)
      */
     public function completeProfile()
     {
@@ -94,20 +94,22 @@ class ParticipantController extends Controller
     {
         $user = User::findOrFail(Auth::id());
 
-        $request->validate([
+        $validated = $request->validate([
             'nip_nik' => 'required|unique:users,nip_nik,' . $user->id,
             'gender' => 'required',
             'jabatan' => 'required',
             'instansi' => 'required',
             'provinsi' => 'required',
             'kabupaten_kota' => 'required',
+            'kecamatan' => 'required',
+            'kelurahan' => 'required',
             'status_kepegawaian' => 'required',
             'whatsapp' => 'required'
         ]);
 
-        $user->update($request->all());
+        $user->update($validated);
 
-        LogHelper::record('Peserta', 'Melengkapi profil peserta (Single Input Data): ' . $user->name);
+        LogHelper::record('Peserta', 'Melengkapi profil peserta (Single Input Data 4 Tingkat): ' . $user->name);
 
         return redirect()->route('participant.dashboard')->with('success', 'Profil berhasil diperbarui.');
     }
@@ -140,6 +142,8 @@ class ParticipantController extends Controller
                 'instansi'           => $user->instansi,
                 'provinsi'           => $user->provinsi,
                 'kabupaten_kota'     => $user->kabupaten_kota,
+                'kecamatan'          => $user->kecamatan,
+                'kelurahan'          => $user->kelurahan,
                 'status_kepegawaian' => $user->status_kepegawaian,
             ]
         );
@@ -157,7 +161,7 @@ class ParticipantController extends Controller
     {
         $training = Training::with('stages')->findOrFail($id);
         $user = Auth::user();
-        
+
         $participant = Participant::where('training_id', $id)
             ->where(function($q) use ($user) {
                 $q->where('user_id', $user->id)
