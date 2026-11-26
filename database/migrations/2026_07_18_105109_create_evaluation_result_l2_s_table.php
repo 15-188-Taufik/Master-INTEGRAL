@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('participant_id')->constrained()->onDelete('cascade');
             $table->decimal('pretest', 5, 2)->default(0);
             $table->decimal('postest', 5, 2)->default(0);
-            $table->decimal('n_gain', 5, 2)->virtualAs('postest - pretest'); // Selisih nilai otomatis
+            $table->decimal('n_gain', 5, 2)->storedAs('postest - pretest'); // Selisih nilai otomatis
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('evaluation_result_l2_s');
+        Schema::dropIfExists('evaluation_results_l2');
     }
 };

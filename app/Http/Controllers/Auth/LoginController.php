@@ -134,11 +134,10 @@ class LoginController extends Controller implements HasMiddleware
 
             return redirect()->intended($this->redirectTo);
 
-        } catch (\Exception $e) {
-            // Log error untuk debug jika diperlukan: \Log::error($e->getMessage());
-            //dd($e->getMessage()); 
-            return redirect('/login')->with('error', 'Gagal login via Google. Silakan coba lagi.');
-        }
+        } catch (\Throwable $e) {
+    \Log::error('Google login gagal: ' . get_class($e) . ' - ' . $e->getMessage());
+    return redirect('/login')->with('error', 'Gagal login via Google. Silakan coba lagi.');
+}
     }
 
     protected function loggedOut(Request $request)

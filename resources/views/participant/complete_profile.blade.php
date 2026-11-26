@@ -31,18 +31,18 @@
 
                     <form action="{{ route('participant.profile.store') }}" method="POST">
                         @csrf
-                        
+
                         <div class="row">
                             <!-- Identitas Utama -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">NIP / NIK (Wajib)</label>
-                                <input type="text" name="nip_nik" class="form-control border-primary" 
+                                <input type="text" name="nip_nik" class="form-control border-primary"
                                        placeholder="Contoh: 19950303..." value="{{ old('nip_nik', auth()->user()->nip_nik) }}" required>
                                 <div class="form-text small text-info">Gunakan NIP asli Anda untuk sinkronisasi riwayat pelatihan.</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Nomor WhatsApp</label>
-                                <input type="number" name="whatsapp" class="form-control border-primary" 
+                                <input type="number" name="whatsapp" class="form-control border-primary"
                                        placeholder="62812345678" value="{{ old('whatsapp', auth()->user()->whatsapp) }}" required>
                             </div>
                         </div>
@@ -61,9 +61,9 @@
                                 <label class="form-label fw-bold">Status Kepegawaian</label>
                                 <select name="status_kepegawaian" class="form-select border-primary" required>
                                     <option value="">-- Pilih Status --</option>
-                                    <option value="PNS" {{ old('status_kepegawaian') == 'PNS' ? 'selected' : '' }}>PNS</option>
-                                    <option value="PPPK" {{ old('status_kepegawaian') == 'PPPK' ? 'selected' : '' }}>PPPK</option>
-                                    <option value="Non-ASN" {{ old('status_kepegawaian') == 'Non-ASN' ? 'selected' : '' }}>Non-ASN</option>
+                                    <option value="PNS" {{ old('status_kepegawaian', auth()->user()->status_kepegawaian) == 'PNS' ? 'selected' : '' }}>PNS</option>
+                                    <option value="PPPK" {{ old('status_kepegawaian', auth()->user()->status_kepegawaian) == 'PPPK' ? 'selected' : '' }}>PPPK</option>
+                                    <option value="Non-ASN" {{ old('status_kepegawaian', auth()->user()->status_kepegawaian) == 'Non-ASN' ? 'selected' : '' }}>Non-ASN</option>
                                 </select>
                             </div>
                         </div>
@@ -72,32 +72,46 @@
                             <!-- Jabatan & Instansi -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Jabatan Saat Ini</label>
-                                <input type="text" name="jabatan" class="form-control border-primary" 
-                                       placeholder="Contoh: Analis SDM Aparatur" value="{{ old('jabatan') }}" required>
+                                <input type="text" name="jabatan" class="form-control border-primary"
+                                       placeholder="Contoh: Analis SDM Aparatur" value="{{ old('jabatan', auth()->user()->jabatan) }}" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Instansi / Unit Kerja</label>
-                                <input type="text" name="instansi" class="form-control border-primary" 
-                                       placeholder="Contoh: BPSDM Provinsi Jawa Barat" value="{{ old('instansi') }}" required>
+                                <input type="text" name="instansi" class="form-control border-primary"
+                                       placeholder="Contoh: BPSDM Provinsi Jawa Barat" value="{{ old('instansi', auth()->user()->instansi) }}" required>
                             </div>
                         </div>
 
                         <hr class="my-4">
-                        <h6 class="text-primary mb-3 fw-bold"><i class="bx bx-map me-1"></i>Wilayah Domisili / Kerja</h6>
-                        
+                        <h6 class="text-primary mb-3 fw-bold"><i class="bx bx-map me-1"></i>Wilayah Domisili / Kerja (4 Tingkat)</h6>
+
                         <div class="row">
-                            <!-- Dropdown Tree Model: Provinsi -->
+                            <!-- Level 1: Provinsi -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Provinsi</label>
                                 <select id="provinsi" name="provinsi" class="form-select border-primary" required>
                                     <option value="">Memuat Provinsi...</option>
                                 </select>
                             </div>
-                            <!-- Dropdown Tree Model: Kabupaten/Kota -->
+                            <!-- Level 2: Kabupaten/Kota -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Kabupaten / Kota</label>
                                 <select id="kabupaten" name="kabupaten_kota" class="form-select border-primary" required disabled>
                                     <option value="">Pilih Provinsi Terlebih Dahulu</option>
+                                </select>
+                            </div>
+                            <!-- Level 3: Kecamatan -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kecamatan</label>
+                                <select id="kecamatan" name="kecamatan" class="form-select border-primary" required disabled>
+                                    <option value="">Pilih Kabupaten/Kota Terlebih Dahulu</option>
+                                </select>
+                            </div>
+                            <!-- Level 4: Kelurahan / Desa -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kelurahan / Desa</label>
+                                <select id="kelurahan" name="kelurahan" class="form-select border-primary" required disabled>
+                                    <option value="">Pilih Kecamatan Terlebih Dahulu</option>
                                 </select>
                             </div>
                         </div>
@@ -109,7 +123,7 @@
                         </div>
                     </form>
                 </div>
-                
+
                 <div class="card-footer bg-light text-center py-3 border-top">
                     <small class="text-muted">INTEGRAL © {{ date('Y') }} | BPSDM Provinsi Jawa Barat</small>
                 </div>
@@ -118,42 +132,98 @@
     </div>
 </div>
 
-{{-- SCRIPT DROPDOWN WILAYAH INDONESIA --}}
+{{-- SCRIPT DROPDOWN WILAYAH INDONESIA 4 TINGKAT --}}
 <script>
     const provSelect = document.getElementById('provinsi');
-    const kabSelect = document.getElementById('kabupaten');
+    const kabSelect  = document.getElementById('kabupaten');
+    const kecSelect  = document.getElementById('kecamatan');
+    const kelSelect  = document.getElementById('kelurahan');
 
     // 1. Load Semua Provinsi
-    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json`)
-    .then(response => response.json())
-    .then(provinces => {
-        let options = '<option value="">-- Pilih Provinsi --</option>';
-        provinces.forEach(item => {
-            options += `<option data-id="${item.id}" value="${item.name}">${item.name}</option>`;
+    fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
+        .then(response => response.json())
+        .then(provinces => {
+            let options = '<option value="">-- Pilih Provinsi --</option>';
+            provinces.forEach(item => {
+                options += `<option data-id="${item.id}" value="${item.name}">${item.name}</option>`;
+            });
+            provSelect.innerHTML = options;
         });
-        provSelect.innerHTML = options;
-    });
 
-    // 2. Load Kabupaten berdasarkan ID Provinsi (Tree Model)
+    // 2. Load Kabupaten/Kota berdasarkan ID Provinsi
     provSelect.addEventListener('change', function() {
         const provinceId = this.options[this.selectedIndex].getAttribute('data-id');
-        
+
+        kecSelect.disabled = true;
+        kecSelect.innerHTML = '<option value="">Pilih Kabupaten/Kota Terlebih Dahulu</option>';
+        kelSelect.disabled = true;
+        kelSelect.innerHTML = '<option value="">Pilih Kecamatan Terlebih Dahulu</option>';
+
         if (provinceId) {
             kabSelect.disabled = false;
             kabSelect.innerHTML = '<option value="">Memuat Kabupaten/Kota...</option>';
-            
+
             fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinceId}.json`)
-            .then(response => response.json())
-            .then(regencies => {
-                let options = '<option value="">-- Pilih Kabupaten/Kota --</option>';
-                regencies.forEach(item => {
-                    options += `<option value="${item.name}">${item.name}</option>`;
+                .then(response => response.json())
+                .then(regencies => {
+                    let options = '<option value="">-- Pilih Kabupaten/Kota --</option>';
+                    regencies.forEach(item => {
+                        options += `<option data-id="${item.id}" value="${item.name}">${item.name}</option>`;
+                    });
+                    kabSelect.innerHTML = options;
                 });
-                kabSelect.innerHTML = options;
-            });
         } else {
             kabSelect.disabled = true;
             kabSelect.innerHTML = '<option value="">Pilih Provinsi Terlebih Dahulu</option>';
+        }
+    });
+
+    // 3. Load Kecamatan berdasarkan ID Kabupaten/Kota
+    kabSelect.addEventListener('change', function() {
+        const regencyId = this.options[this.selectedIndex].getAttribute('data-id');
+
+        kelSelect.disabled = true;
+        kelSelect.innerHTML = '<option value="">Pilih Kecamatan Terlebih Dahulu</option>';
+
+        if (regencyId) {
+            kecSelect.disabled = false;
+            kecSelect.innerHTML = '<option value="">Memuat Kecamatan...</option>';
+
+            fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${regencyId}.json`)
+                .then(response => response.json())
+                .then(districts => {
+                    let options = '<option value="">-- Pilih Kecamatan --</option>';
+                    districts.forEach(item => {
+                        options += `<option data-id="${item.id}" value="${item.name}">${item.name}</option>`;
+                    });
+                    kecSelect.innerHTML = options;
+                });
+        } else {
+            kecSelect.disabled = true;
+            kecSelect.innerHTML = '<option value="">Pilih Kabupaten/Kota Terlebih Dahulu</option>';
+        }
+    });
+
+    // 4. Load Kelurahan/Desa berdasarkan ID Kecamatan
+    kecSelect.addEventListener('change', function() {
+        const districtId = this.options[this.selectedIndex].getAttribute('data-id');
+
+        if (districtId) {
+            kelSelect.disabled = false;
+            kelSelect.innerHTML = '<option value="">Memuat Kelurahan/Desa...</option>';
+
+            fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${districtId}.json`)
+                .then(response => response.json())
+                .then(villages => {
+                    let options = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+                    villages.forEach(item => {
+                        options += `<option value="${item.name}">${item.name}</option>`;
+                    });
+                    kelSelect.innerHTML = options;
+                });
+        } else {
+            kelSelect.disabled = true;
+            kelSelect.innerHTML = '<option value="">Pilih Kecamatan Terlebih Dahulu</option>';
         }
     });
 </script>

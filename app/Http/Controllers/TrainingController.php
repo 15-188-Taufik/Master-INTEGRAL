@@ -168,7 +168,7 @@ class TrainingController extends Controller
             abort(403, 'Anda tidak memiliki akses ke pelatihan bidang ini.');
         }
 
-        $newCode = strtoupper(\Illuminate\Support\Str::random(6));
+        $newCode = Training::generateUniqueToken();
         $training->update(['invitation_code' => $newCode]);
 
         LogHelper::record('Pelatihan', 'Generate token baru untuk ' . $training->nama_pelatihan . ': ' . $newCode);
