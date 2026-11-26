@@ -38,18 +38,35 @@ Route::get('/logout', function() {
 
 // 3. AUTHENTICATED SYSTEM (Role-Based Access Control)
 Route::middleware(['auth'])->group(function () {
-    
-    // --- DASHBOARD ADMIN & TRACKING JP ---
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // --- PENGATURAN SISTEM (Khusus Superadmin) ---
     Route::middleware(['can:superadmin-only'])->group(function () {
         // CRUD Admin Bidang
         Route::resource('users', UserController::class);
         Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
-        
+
         // Audit Trail / Log Aktivitas Admin (IP Address & Browser)
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    });
+
+    // --- DASHBOARD & MANAJEMEN PELATIHAN (Khusus Superadmin & Admin Bidang) ---
+    Route::middleware(['can:admin-only'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Manajemen Pelatihan
+        Route::resource('trainings', TrainingController::class);
+        Route::get('trainings/{id}/manage', [TrainingController::class, 'manage'])->name('trainings.manage');
+        Route::get('trainings/{id}/new-code', [TrainingController::class, 'generateNewCode'])->name('trainings.new_code');
+        Route::put('trainings/{id}/set-lms', [TrainingController::class, 'setLmsLink'])->name('trainings.set_lms');
+
+        // Manajemen Peserta (Single Input Data & Smart Linking)
+        Route::get('trainings/{id}/participants', [TrainingController::class, 'showParticipants'])->name('trainings.participants');
+        Route::post('trainings/{id}/participants/manual', [TrainingController::class, 'storeParticipant'])->name('participants.store');
+        Route::post('trainings/{id}/participants/import', [TrainingController::class, 'importParticipants'])->name('participants.import');
+        Route::put('participants/{id}', [TrainingController::class, 'updateParticipant'])->name('participants.update');
+        Route::delete('participants/{id}', [TrainingController::class, 'destroyParticipant'])->name('participants.destroy');
+        Route::get('participants/download-template', [TrainingController::class, 'downloadTemplate'])->name('participants.template');
+        Route::get('trainings/{id}/export-participants-data', [TrainingController::class, 'exportParticipants'])->name('participants.export_data');
     });
 
     // --- PROFIL PENGGUNA ---
@@ -57,22 +74,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
-    // --- MANAJEMEN PELATIHAN (Admin Bidang & Superadmin) ---
-    Route::resource('trainings', TrainingController::class);
-    Route::get('trainings/{id}/manage', [TrainingController::class, 'manage'])->name('trainings.manage');
-    Route::get('trainings/{id}/new-code', [TrainingController::class, 'generateNewCode'])->name('trainings.new_code');
-    Route::put('trainings/{id}/set-lms', [TrainingController::class, 'setLmsLink'])->name('trainings.set_lms');
-
-    // --- MANAJEMEN PESERTA (Single Input Data & Smart Linking) ---
-    Route::get('trainings/{id}/participants', [TrainingController::class, 'showParticipants'])->name('trainings.participants');
-    Route::post('trainings/{id}/participants/manual', [TrainingController::class, 'storeParticipant'])->name('participants.store');
-    Route::post('trainings/{id}/participants/import', [TrainingController::class, 'importParticipants'])->name('participants.import');
-    Route::put('participants/{id}', [TrainingController::class, 'updateParticipant'])->name('participants.update');
-    Route::delete('participants/{id}', [TrainingController::class, 'destroyParticipant'])->name('participants.destroy');
-    Route::get('participants/download-template', [TrainingController::class, 'downloadTemplate'])->name('participants.template');
-    Route::get('trainings/{id}/export-participants-data', [TrainingController::class, 'exportParticipants'])->name('participants.export_data');
-
-    // --- PELENGKAPAN PROFIL AWAL PESERTA (Pohon Wilayah: Provinsi -> Kab/Kota) ---
+    // --- PELENGKAPAN PROFIL AWAL PESERTA (Pohon Wilayah 4 Tingkat) ---
     Route::get('/complete-profile', [ParticipantController::class, 'completeProfile'])->name('participant.profile.complete');
     Route::post('/complete-profile', [ParticipantController::class, 'storeProfile'])->name('participant.profile.store');
 

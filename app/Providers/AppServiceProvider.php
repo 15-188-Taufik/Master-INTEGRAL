@@ -23,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
             return $user->role === 'superadmin';
         });
 
+        \Illuminate\Support\Facades\Gate::define('admin-only', function ($user) {
+            return in_array($user->role, ['superadmin', 'admin_bidang']);
+        });
+
         \Illuminate\Support\Facades\Gate::define('isParticipant', function ($user) {
             return $user->role === 'participant';
         });
