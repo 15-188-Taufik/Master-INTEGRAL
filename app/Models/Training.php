@@ -24,11 +24,29 @@ class Training extends Model
         'tgl_selesai',
     ];
 
+    /**
+     * Generator Token 6 digit acak berentropi tinggi & dijamin unik antarkelas (F-09, NF-01)
+     */
+    public static function generateUniqueToken(): string
+    {
+        $characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        $maxIndex = strlen($characters) - 1;
+
+        do {
+            $token = '';
+            for ($i = 0; $i < 6; $i++) {
+                $token .= $characters[random_int(0, $maxIndex)];
+            }
+        } while (self::where('invitation_code', $token)->exists());
+
+        return $token;
+    }
+
     public function getSisaHariAttribute()
     {
         $today = Carbon::now()->startOfDay();
         $end = Carbon::parse($this->tgl_selesai)->startOfDay();
-        
+
         return (int) $today->diffInDays($end, false);
     }
 
@@ -49,7 +67,7 @@ class Training extends Model
     }
 
     /**
-     * Trigger Perhitungan Jadwal Sebar Pasca:
+     * Trigger 3 — Perhitungan Jadwal Sebar Pasca (F-10):
      * - Manajerial: 1 Tahun setelah selesai
      * - Teknis / Lainnya: 4 Bulan setelah selesai
      */
@@ -74,16 +92,16 @@ class Training extends Model
 
         return (int) $today->diffInDays($target, false);
     }
-    
+
     /**
-     * Otomatis generate Token 6 digit acak/unik saat pelatihan dibuat
+     * Trigger 1 — Otomatis generate Token 6 digit acak & unik saat pelatihan dibuat
      */
     protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
             if (empty($model->invitation_code)) {
-                $model->invitation_code = strtoupper(\Illuminate\Support\Str::random(6));
+                $model->invitation_code = self::generateUniqueToken();
             }
         });
     }
