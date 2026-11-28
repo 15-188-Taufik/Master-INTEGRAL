@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Auth;
@@ -67,6 +68,15 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('participants/{id}', [TrainingController::class, 'destroyParticipant'])->name('participants.destroy');
         Route::get('participants/download-template', [TrainingController::class, 'downloadTemplate'])->name('participants.template');
         Route::get('trainings/{id}/export-participants-data', [TrainingController::class, 'exportParticipants'])->name('participants.export_data');
+
+        // MODUL 4 (Iterasi 1 - F-36 / US-36): Hierarki Berkas Bersarang & Folder Global
+        Route::get('documents', [DocumentController::class, 'index'])->name('documents.index');
+        Route::post('documents/folder', [DocumentController::class, 'createFolder'])->name('documents.folder.create');
+        Route::delete('documents/folder/{folder}', [DocumentController::class, 'destroyFolder'])->name('documents.folder.destroy');
+        Route::post('documents/upload', [DocumentController::class, 'uploadFile'])->name('documents.upload');
+        Route::get('documents/file/{file}/view', [DocumentController::class, 'viewFile'])->name('documents.file.view');
+        Route::get('documents/file/{file}/download', [DocumentController::class, 'downloadFile'])->name('documents.file.download');
+        Route::delete('documents/file/{file}', [DocumentController::class, 'destroyFile'])->name('documents.file.destroy');
     });
 
     // --- PROFIL PENGGUNA ---

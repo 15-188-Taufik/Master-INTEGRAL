@@ -39,6 +39,17 @@
                 </a>
             </li>
 
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Arsip & Dokumen</span>
+            </li>
+
+            <li class="menu-item {{ request()->is('documents*') ? 'active' : '' }}">
+                <a href="{{ route('documents.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-folder-open"></i>
+                    <div>Manajemen Dokumen</div>
+                </a>
+            </li>
+
             @if(Auth::check() && Auth::user()->role == 'superadmin')
             <li class="menu-header small text-uppercase">
                 <span class="menu-header-text">Pengaturan Sistem</span>
