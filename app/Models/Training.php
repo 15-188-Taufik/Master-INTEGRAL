@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class Training extends Model
@@ -67,6 +68,14 @@ class Training extends Model
     }
 
     /**
+     * Folder induk arsip dan subfolder dokumen pelatihan.
+     */
+    public function folders()
+    {
+        return $this->hasMany(Folder::class);
+    }
+
+    /**
      * Trigger 3 — Perhitungan Jadwal Sebar Pasca (F-10):
      * - Manajerial: 1 Tahun setelah selesai
      * - Teknis / Lainnya: 4 Bulan setelah selesai
@@ -102,6 +111,36 @@ class Training extends Model
         static::creating(function ($model) {
             if (empty($model->invitation_code)) {
                 $model->invitation_code = self::generateUniqueToken();
+            }
+        });
+
+        // Trigger 2 — siapkan struktur arsip standar saat pelatihan dibuat.
+        static::created(function (Training $training): void {
+            $userId = Auth::id() ?: User::query()->value('id');
+
+            if (!$userId) {
+                return;
+            }
+
+            $root = $training->folders()->firstOrCreate(
+                ['parent_id' => null],
+                [
+                    'name' => $training->nama_pelatihan,
+                    'bidang' => $training->bidang,
+                    'user_id' => $userId,
+                    'is_public' => false,
+                ]
+            );
+
+            foreach (['JADWAL PELATIHAN', 'DATA PESERTA', 'HASIL EVALUASI DAMPAK'] as $name) {
+                $training->folders()->firstOrCreate(
+                    ['parent_id' => $root->id, 'name' => $name],
+                    [
+                        'bidang' => $training->bidang,
+                        'user_id' => $userId,
+                        'is_public' => false,
+                    ]
+                );
             }
         });
     }
