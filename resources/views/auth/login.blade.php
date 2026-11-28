@@ -4,7 +4,7 @@
 <div class="authentication-wrapper authentication-basic container-p-y">
     <div class="authentication-inner">
         
-        <!-- Tombol Kembali ke Beranda (Diletakkan di luar Card agar terlihat modern) -->
+        <!-- Tombol Kembali ke Beranda -->
         <div class="mb-3 animate__animated animate__fadeInLeft">
             <a href="{{ url('/') }}" class="d-flex align-items-center text-muted fw-semibold">
                 <i class="bx bx-chevron-left fs-4"></i>
@@ -53,7 +53,7 @@
                     <div class="mb-3 form-password-toggle">
                         <div class="d-flex justify-content-between">
                             <label class="form-label fw-bold" for="password">Password</label>
-                            <a href="#">
+                            <a href="{{ route('helpdesk.create') }}">
                                 <small class="text-primary fw-semibold">Lupa Password?</small>
                             </a>
                         </div>
@@ -86,7 +86,14 @@
                     </a>
                 </div>
 
-                <div class="text-center mt-5">
+                {{-- HELPDESK KENDALA LOGIN INTERNAL (F-07) --}}
+                <div class="text-center mt-3">
+                    <a href="{{ route('helpdesk.create') }}" class="small text-decoration-none text-muted">
+                        <i class="bx bx-support me-1"></i> Mengalami kendala login? <strong class="text-primary">Buka Helpdesk Akses</strong>
+                    </a>
+                </div>
+
+                <div class="text-center mt-4">
                     <p class="mb-0 small text-muted">
                         BPSDM Provinsi Jawa Barat &copy; {{ date('Y') }}
                     </p>
@@ -111,7 +118,6 @@
         overflow-x: hidden;
     }
 
-    /* Responsivitas Kontainer Utama */
     .authentication-inner {
         max-width: 450px !important;
         width: 100%;
@@ -127,7 +133,6 @@
         .authentication-wrapper.authentication-basic .authentication-inner { padding: 0 1rem; }
     }
 
-    /* Dekorasi Lingkaran di Background (Hidden on Mobile for Performance) */
     .bg-shape-1 {
         position: fixed;
         top: -100px;
@@ -150,7 +155,6 @@
         z-index: -1;
     }
 
-    /* Input Focus Styling */
     .input-group-text {
         background-color: #fcfcff;
         border-color: #d9dee3;
@@ -160,7 +164,6 @@
         border-color: #696cff !important;
     }
 
-    /* Button Login Animation */
     .btn-login {
         background: linear-gradient(45deg, #696cff, #43459d);
         border: none;
@@ -171,7 +174,6 @@
         box-shadow: 0 10px 20px rgba(105, 108, 255, 0.3) !important;
     }
 
-    /* Google Button */
     .google-btn {
         border: 1px solid #d9dee3;
         background: white;
@@ -183,7 +185,6 @@
         transform: scale(1.01);
     }
 
-    /* Divider */
     .divider-text {
         background-color: transparent !important;
         font-weight: 700;

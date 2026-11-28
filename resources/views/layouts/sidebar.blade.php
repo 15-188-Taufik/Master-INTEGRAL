@@ -66,6 +66,12 @@
                     <div>Audit Trail & Log</div>
                 </a>
             </li>
+            <li class="menu-item {{ request()->is('helpdesk*') ? 'active' : '' }}">
+                <a href="{{ route('helpdesk.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-support"></i>
+                    <div>Helpdesk Akses</div>
+                </a>
+            </li>
             @endif
         @endif
 

@@ -11,6 +11,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\HelpdeskController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -22,6 +23,10 @@ use Illuminate\Support\Facades\Auth;
 // 1. PUBLIC ROUTES (Tanpa Login)
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/search', [SearchController::class, 'index'])->name('global.search');
+
+// Helpdesk Kendala Login Internal (F-07)
+Route::get('/helpdesk', [HelpdeskController::class, 'create'])->name('helpdesk.create');
+Route::post('/helpdesk', [HelpdeskController::class, 'store'])->name('helpdesk.store');
 
 // Otentikasi Google OAuth untuk Peserta
 Route::get('auth/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
@@ -48,6 +53,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Audit Trail / Log Aktivitas Admin (IP Address & Browser)
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+        // Kelola Tiket Helpdesk Kendala Login (F-07)
+        Route::get('helpdesk/tickets', [HelpdeskController::class, 'index'])->name('helpdesk.index');
+        Route::put('helpdesk/tickets/{ticket}/status', [HelpdeskController::class, 'updateStatus'])->name('helpdesk.update-status');
     });
 
     // --- DASHBOARD & MANAJEMEN PELATIHAN (Khusus Superadmin & Admin Bidang) ---
